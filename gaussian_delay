@@ -1,0 +1,194 @@
+import os
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+import numpy as np
+import math
+import emcee
+import h5py
+import pandas as pd
+from numpy import *
+import matplotlib
+import matplotlib.pyplot as plt
+from scipy import interpolate
+from scipy.interpolate import RegularGridInterpolator
+import scipy.special as sc
+import scipy.integrate as integrate
+from scipy.optimize import minimize
+from pynverse import inversefunc
+import pylab as pl
+import time
+import pickle
+from schwimmbad import MPIPool
+
+from scipy.interpolate import interp1d
+from scipy.stats import beta
+#from astropy import cosmology, units
+
+import corner
+#import multiprocessing
+import gwpopulation as gwpop
+xp = gwpop.cupy_utils.xp
+
+# set truth value
+alpha_true = -1/16
+Beta_true = 0.8
+sigma_true = 0.8
+
+
+##########################################
+
+# load posterior data of GW events
+data_list = h5py.File('GW_data_Gaussian.h5', 'r')
+
+data1 = data_list.get('z')
+data_z = np.array(data1)
+
+data2 = data_list.get('Log10Mbh')
+data_mass = np.array(data2)
+
+data={'mass':data_mass,'redshift':data_z}
+for key in data:
+    data[key] = xp.array(data[key])
+
+samples_posterior=10000
+
+
+########################################
+
+# interpolate the function of SMBHB merger rate, R(theta|Lambda), where theta=(M,z) and Lambda=(alpha, beta, sigma)
+data_list = h5py.File('grid_prob_gaussian.h5', 'r')
+
+n0 = data_list.get('grid_data')
+values_prob = np.array(n0)
+
+n1 = data_list.get('z')
+data_z = np.array(n1)
+
+n2 = data_list.get('Log10Mbh')
+data_mass = np.array(n2)
+
+n3 = data_list.get('alpha')
+data_alpha = np.array(n3)
+
+n4 = data_list.get('beta')
+data_Beta = np.array(n4)
+
+n5 = data_list.get('sigma')
+data_sigma = np.array(n5)
+
+points=(data_z, data_mass, data_alpha, data_Beta, data_sigma)
+fun_prob = RegularGridInterpolator(points, values_prob, method='linear')
+
+# interpolate function of event number N(Lambda)
+data_list_events = h5py.File('grid_N.h5', 'r')
+
+N0 = data_list_events.get('gridN')
+values_events = np.array(N0)
+
+N1 = data_list_events.get('alpha')
+data_alpha2 = np.array(N1)
+
+N2 = data_list_events.get('beta')
+data_Beta2 = np.array(N2)
+
+N3 = data_list_events.get('sigma')
+data_sigma2 = np.array(N3)
+
+points_events=(data_alpha2, data_Beta2, data_sigma2)
+fun_events = RegularGridInterpolator(points_events, values_events, method='linear')
+
+
+# summation of P(theta|Lambda) over posteriors of theta for each event, assuming the default prior is uniform distribution  
+def probability_m_z(theta):
+    alpha, Beta, sigma = theta
+    prob_ii = []
+    for ii in range( 0,len(data['mass']) ):
+        prob_sum = 0
+        points = np.transpose( np.array([ data['redshift'][ii][:], data['mass'][ii][:], [alpha]*len(data['mass'][ii]), [Beta]*len(data['mass'][ii]), [sigma]*len(data['mass'][ii]) ]) )
+        prob_sum = sum(fun_prob( points ))
+        prob_ii.append( prob_sum ) 
+    return prob_ii
+
+
+# Likelihood of L({d}|Lambda)
+def log_likelihood(theta):
+    alpha, Beta, sigma = theta
+    ln_bayes_factors_per_event =  -np.log( samples_posterior ) + np.log( probability_m_z(theta) )
+    ln_l = np.sum( ln_bayes_factors_per_event  ) - len(data['mass']) * np.log( fun_events(np.array([alpha, Beta, sigma])) )
+    return ln_l 
+
+# prior of hyperparameter Lambda
+def log_prior(theta):
+    alpha, Beta, sigma = theta
+    if -1.2 < alpha < 1.25 and  0.01 < Beta < 2.2 and 0.105 < sigma < 2.2:
+        return 0.0
+    return -np.inf
+
+def log_probability(theta):
+    lp = log_prior(theta)
+    if not np.isfinite(lp):
+        return -np.inf
+    return lp + log_likelihood(theta)
+
+#########  find the Maximum likelihood estimates 
+##np.random.seed(42)
+##nll = lambda *args: -log_likelihood(*args)
+##initial = np.array([-0.1, 0.5, 0.5]) + 0.01 * np.random.randn(3)
+##soln = minimize(nll, initial)
+##alpha_ml, beta_ml, sigma_ml = soln.x
+##
+##print("Maximum likelihood estimates:")
+##print("alpha = {0:.3f}".format(alpha_ml))
+##print("beta = {0:.3f}".format(beta_ml))
+##print("sigma = {0:.3f}".format(sigma_ml))
+
+# initialize parallel processing samplers:
+with MPIPool() as pool:
+    if not pool.is_master():
+        pool.wait()
+        sys.exit(0)
+    # Initialize the walkers
+    np.random.seed(42)
+    initial = np.array([alpha_true, Beta_true, sigma_true]) + 0.05 * np.random.randn(40, 3)*np.array([alpha_true, Beta_true, sigma_true])
+    pos = initial
+    nwalkers, ndim = pos.shape
+    nsteps = 20000
+    # Initialize the sampler
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability, pool=pool)
+    sampler.run_mcmc(pos, nsteps, progress=True)
+
+
+fig, axes = plt.subplots(3, figsize=(10, 7), sharex=True)
+samples = sampler.get_chain()
+labels = ["\N{GREEK SMALL LETTER ALPHA}","\N{GREEK SMALL LETTER BETA}","\N{GREEK SMALL LETTER SIGMA}"]
+
+for i in range(ndim):
+    ax = axes[i]
+    ax.plot(samples[:, :, i], "k", alpha=0.3)
+    ax.set_xlim(0, len(samples))
+    ax.set_ylabel(labels[i])
+    ax.yaxis.set_label_coords(-0.1, 0.5)
+
+axes[-1].set_xlabel("step number");
+plt.savefig('para_steps.eps')
+
+
+# save data
+samples_data=sampler.get_chain(discard=5000, flat=True, thin=1)
+prob_data=sampler.get_log_prob(discard=5000, flat=True, thin=1)
+
+np.savetxt("array_alpha", samples_data[:,0])
+np.savetxt("array_beta", samples_data[:,1])
+np.savetxt("array_sigma", samples_data[:,2])
+np.savetxt("array_prob", prob_data)
+
+
+
+# plot posteriors
+flat_samples = sampler.get_chain(discard=3000, flat=True, thin=5)
+
+fig = corner.corner(
+    flat_samples, labels=labels, truths=[alpha_true, Beta_true, sigma_true], smooth=True, quiet=True, quantiles=(0.16, 0.84), levels=(0.68, 0.954, ), plot_datapoints=False
+)
+plt.tight_layout()
+plt.savefig('delay_parameters.eps')
+
