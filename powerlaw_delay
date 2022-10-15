@@ -1,0 +1,170 @@
+import os
+os.environ['OPENBLAS_NUM_THREADS'] = '1'
+import numpy as np
+import math
+import emcee
+import h5py
+import pandas as pd
+from numpy import *
+import matplotlib
+import matplotlib.pyplot as plt
+from scipy import interpolate
+from scipy.interpolate import RegularGridInterpolator
+import scipy.special as sc
+from scipy.optimize import minimize
+import pylab as pl
+import time
+import pickle
+from schwimmbad import MPIPool
+
+from scipy.interpolate import interp1d
+from scipy.stats import beta
+#from astropy import cosmology, units
+
+import gwpopulation as gwpop
+#import multiprocessing
+xp = gwpop.cupy_utils.xp
+
+# set truth value
+alpha_true = 0.1
+Beta_true = 0.5
+
+
+
+##########################################
+
+# load posterior data of GW events
+data_list = h5py.File('GW_data_Powerlaw.h5', 'r')
+
+data1 = data_list.get('z')
+data_z = np.array(data1)
+
+data2 = data_list.get('Log10Mbh')
+data_mass = np.array(data2)
+
+data={'mass':data_mass,'redshift':data_z}
+for key in data:
+    data[key] = xp.array(data[key])
+
+samples_posterior=10000
+
+
+##########################################    
+
+# interpolate merger rate function R(theta|Lambda)
+data_list = h5py.File('grid_prob_Powerlaw_2p.h5', 'r')
+
+n0 = data_list.get('grid_data')
+values_prob = np.array(n0)
+
+n1 = data_list.get('z')
+data_z = np.array(n1)
+
+n2 = data_list.get('Log10Mbh')
+data_mass = np.array(n2)
+
+n3 = data_list.get('gamma')
+data_alpha = np.array(n3)
+
+n4 = data_list.get('kappa')
+data_Beta = np.array(n4)
+
+points=(data_z, data_mass, data_alpha, data_Beta)
+fun_prob = RegularGridInterpolator(points, values_prob, method='linear')
+
+# interpolate event number function N(Lambda)
+data_list_events = h5py.File('grid_N_PL_2p.h5', 'r')
+
+N0 = data_list_events.get('gridN')
+values_events = np.array(N0)
+
+N1 = data_list_events.get('gamma')
+data_alpha2 = np.array(N1)
+
+N2 = data_list_events.get('kappa')
+data_Beta2 = np.array(N2)
+
+points_events=(data_alpha2, data_Beta2)
+fun_events = RegularGridInterpolator(points_events, values_events, method='linear')
+
+# sum of P(theta|Lambda) over posteriors in each event, assuming the default prior is uniform distribution  
+def probability_m_z(theta):
+    alpha, Beta = theta
+    prob_ii = []
+    for ii in range( 0,len(data['mass']) ):
+        prob_sum = 0
+        points = np.transpose( np.array([ data['redshift'][ii][:], data['mass'][ii][:], [alpha]*len(data['mass'][ii]), [Beta]*len(data['mass'][ii]) ]) )
+        prob_sum = sum(fun_prob( points ))
+        prob_ii.append( prob_sum ) 
+    return prob_ii
+
+# Likelihood of L({d}|Lambda)
+def log_likelihood(theta):
+    alpha, Beta = theta
+    ln_bayes_factors_per_event =  -np.log( samples_posterior ) + np.log( probability_m_z(theta) )
+    ln_l = np.sum( ln_bayes_factors_per_event  ) - len(data['mass']) * np.log( fun_events(np.array([alpha, Beta])) )
+    return ln_l 
+
+
+# prior of hyperparameters Lambda
+def log_prior(theta):
+    alpha, Beta = theta
+    if -1 < alpha < 0.99 and  -2 < Beta < 2.5:
+        return 0.0
+    return -np.inf
+
+def log_probability(theta):
+    lp = log_prior(theta)
+    if not np.isfinite(lp):
+        return -np.inf
+    return lp + log_likelihood(theta)
+
+###########  find the Maximum likelihood estimates 
+### initialize parallel processing samplers:
+##with MPIPool() as pool:
+##    if not pool.is_master():
+##        pool.wait()
+##        sys.exit(0)
+##    # Initialize the walkers
+##    np.random.seed(42)
+##    initial = np.array([alpha_true, Beta_true]) + 0.05 * np.random.randn(30, 2)*np.array([alpha_true, Beta_true])
+##    pos = initial
+##    nwalkers, ndim = pos.shape
+##    nsteps = 15000
+##    # Initialize the sampler
+##    sampler = emcee.EnsembleSampler(nwalkers, ndim, log_probability, pool=pool)
+##    sampler.run_mcmc(pos, nsteps, progress=True)
+##
+
+fig, axes = plt.subplots(2, figsize=(10, 7), sharex=True)
+samples = sampler.get_chain()
+labels = ["\N{GREEK SMALL LETTER GAMMA}","\N{GREEK SMALL LETTER KAPPA}"]
+
+for i in range(ndim):
+    ax = axes[i]
+    ax.plot(samples[:, :, i], "k", alpha=0.3)
+    ax.set_xlim(0, len(samples))
+    ax.set_ylabel(labels[i])
+    ax.yaxis.set_label_coords(-0.1, 0.5)
+
+axes[-1].set_xlabel("step number");
+plt.savefig('para_steps.eps')
+
+
+# save data
+samplesdata=sampler.get_chain(discard=2000, flat=True, thin=1)
+np.savetxt("array_gamma", samplesdata[:,0])
+np.savetxt("array_kappa", samplesdata[:,1])
+
+
+#plot posteriors 
+import corner
+
+flat_samples = sampler.get_chain(discard=2000, flat=True, thin=5)
+
+fig = corner.corner(
+    flat_samples, labels=labels, truths=[alpha_true, Beta_true], smooth=True, quiet=True, quantiles=(0.16, 0.84), levels=(0.68, 0.954, ), plot_datapoints=False
+)
+plt.tight_layout()
+plt.savefig('delay_parameters.eps')
+
