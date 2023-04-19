@@ -11,10 +11,10 @@ Compile the Fortran code with the command:<br />
 f2py -c -m bhmergerrate MergerRateSMBH.f90<br />
 f2py -c -m bhmergernumber MergerNumberSMBH.f90
 
-The interpolation data for the merger rate in the Power-law delay model can be downloaded from the following link:
+The interpolation data for the merger rate in the Power-law delay model can be downloaded from the following link:<br />
 https://www.dropbox.com/s/7f1dyp1bhfhhn3p/powerlaw_delay.zip?dl=0
 
-Citation of the reference will be appreciated when you use the code/data:
-Yun Fang & Huan Yang
-``Probing the Delay Time of Supermassive Black Hole Binary Mergers With Gravitational Waves"
-arXiv: 2209.14509
+Citation of the reference will be appreciated when you use the code/data:<br />
+Yun Fang & Huan Yang<br />
+``Probing the Delay Time of Supermassive Black Hole Binary Mergers With Gravitational Waves"<br />
+arXiv: 2209.14509<br />
