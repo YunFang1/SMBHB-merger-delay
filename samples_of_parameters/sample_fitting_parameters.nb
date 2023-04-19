@@ -1,0 +1,1993 @@
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[         0,          0]
+NotebookDataLength[     74387,       1992]
+NotebookOptionsPosition[     71151,       1927]
+NotebookOutlinePosition[     71618,       1945]
+CellTagsIndexPosition[     71575,       1942]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"(*", " ", 
+  RowBox[{
+  "This", " ", "code", " ", "is", " ", "for", " ", "generating", " ", "the", 
+   " ", "PDF", " ", "of", " ", "fitting", " ", "parameters", " ", "in", " ", 
+   "galaxy", " ", "merger", " ", "rate", " ", "per", " ", "galaxy", " ", 
+   "and", " ", "stellar", " ", "mass", " ", "function", " ", "and", " ", 
+   "sampling", " ", "the", " ", "fitting", " ", "parameters"}], " ", 
+  "*)"}]], "Input",
+ CellChangeTimes->{{3.867527602992941*^9, 3.8675276403008127`*^9}, 
+   3.867598244171267*^9, {3.890629218294923*^9, 3.890629311752376*^9}, {
+   3.890814985277899*^9, 
+   3.890815087015161*^9}},ExpressionUUID->"f3c45a80-d11b-4c8c-825e-\
+284811b392da"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$Assumptions", "=", 
+   RowBox[{
+    RowBox[{"uu", "\[Element]", "Reals"}], "&&", 
+    RowBox[{"\[Sigma]\[Sigma]1", ">", "0"}], "&&", 
+    RowBox[{"\[Sigma]\[Sigma]1", "\[Element]", "Reals"}], "&&", 
+    RowBox[{"\[Sigma]\[Sigma]2", ">", "0"}], "&&", 
+    RowBox[{"\[Sigma]\[Sigma]2", "\[Element]", "Reals"}], "&&", 
+    RowBox[{"\[Sigma]\[Sigma]1", ">", "\[Sigma]\[Sigma]2"}], "&&", 
+    RowBox[{"\[Sigma]\[Sigma]1", ">", 
+     RowBox[{
+      FractionBox["21", "4"], " ", "\[Sigma]\[Sigma]2"}]}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalD]", "=", 
+   RowBox[{"ProbabilityDistribution", "[", 
+    RowBox[{
+     RowBox[{"Piecewise", "[", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           SuperscriptBox["\[ExponentialE]", 
+            RowBox[{"-", 
+             FractionBox[
+              SuperscriptBox[
+               RowBox[{"(", 
+                RowBox[{"x", "-", "uu"}], ")"}], "2"], 
+              RowBox[{"2", " ", 
+               SuperscriptBox["\[Sigma]\[Sigma]1", "2"]}]]}]], "*", 
+           FractionBox["1", 
+            SqrtBox[
+             RowBox[{"2", " ", "\[Pi]"}]]], "*", 
+           FractionBox["2", 
+            RowBox[{"\[Sigma]\[Sigma]1", "+", "\[Sigma]\[Sigma]2"}]]}], ",", 
+          RowBox[{
+           RowBox[{"-", "Infinity"}], "\[LessEqual]", "x", "<", "uu"}]}], 
+         "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{
+           SuperscriptBox["\[ExponentialE]", 
+            RowBox[{"-", 
+             FractionBox[
+              SuperscriptBox[
+               RowBox[{"(", 
+                RowBox[{"x", "-", "uu"}], ")"}], "2"], 
+              RowBox[{"2", " ", 
+               SuperscriptBox["\[Sigma]\[Sigma]2", "2"]}]]}]], "*", 
+           FractionBox["1", 
+            SqrtBox[
+             RowBox[{"2", " ", "\[Pi]"}]]], "*", 
+           FractionBox["2", 
+            RowBox[{"\[Sigma]\[Sigma]1", "+", "\[Sigma]\[Sigma]2"}]]}], ",", 
+          RowBox[{"uu", "\[LessEqual]", " ", "x", "<", "Infinity"}]}], " ", 
+         "}"}]}], "}"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", 
+       RowBox[{"-", "Infinity"}], ",", "Infinity"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"NumSample", "=", "10000"}], ";"}]}], "Code",
+ CellChangeTimes->{{3.8675990111862087`*^9, 3.8675990938047857`*^9}, {
+  3.8675998570522327`*^9, 3.8675998591298*^9}, {3.867599889206169*^9, 
+  3.8675998996243143`*^9}, {3.867599938093004*^9, 3.86759995658814*^9}, {
+  3.8676000523958883`*^9, 3.867600062334117*^9}, {3.867600476668099*^9, 
+  3.867600553509243*^9}, {3.867600726039566*^9, 3.86760081810681*^9}, {
+  3.8676008926073303`*^9, 3.867600948700157*^9}, {3.867703812449559*^9, 
+  3.867703813305593*^9}, {3.8677688291059437`*^9, 3.867768829431757*^9}, {
+  3.8683602880259542`*^9, 3.868360352235465*^9}},
+ CellLabel->"In[2]:=",ExpressionUUID->"0cc1e16d-157a-4c3e-b0ef-1a747e2e1eb7"],
+
+Cell[CellGroupData[{
+
+Cell["sampling  parameters in stellar mass distribution", "Section",
+ CellChangeTimes->{
+  3.868080462041765*^9},ExpressionUUID->"f64b7552-bc9a-4276-b8f3-\
+6f869658abf3"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{"\[Phi]", "=", 
+    RowBox[{"\[Phi]star", "*", 
+     RowBox[{"Log", "[", "10", "]"}], "*", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       SuperscriptBox["10", 
+        RowBox[{"\[ScriptCapitalM]", "-", "\[ScriptCapitalM]star"}]], ")"}], 
+      RowBox[{"1", "+", "\[Alpha]"}]], "*", 
+     RowBox[{"Exp", "[", 
+      RowBox[{"-", " ", 
+       SuperscriptBox["10", 
+        RowBox[{"\[ScriptCapitalM]", "-", "\[ScriptCapitalM]star"}]]}], 
+      "]"}]}]}], ";"}], "*)"}]], "Subsubsection",
+ CellChangeTimes->{{3.85891179398536*^9, 3.85891192017523*^9}, {
+  3.8589119809615297`*^9, 3.858912021082369*^9}, {3.858912996399015*^9, 
+  3.858913011779044*^9}, {3.858915666169075*^9, 3.8589156665381002`*^9}, {
+  3.8589171023520184`*^9, 3.858917107834391*^9}, {3.8589174646763678`*^9, 
+  3.8589174694311123`*^9}, {3.868080470479149*^9, 
+  3.8680804772990217`*^9}},ExpressionUUID->"094b0762-fcb6-4a40-9518-\
+c9685ecd5e1d"],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{
+   RowBox[{"z", " ", "in", " ", "redshift", " ", "bin", " ", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"0", ",", "0.06"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"0.25", ",", "0.75"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"0.75", ",", "1.25"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"1.25", ",", "1.75"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"1.75", ",", "2.25"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"2.25", ",", "2.75"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"2.75", ",", "3.75"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"3.75", ",", "4.5"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"4.5", ",", "5.5"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"5.5", ",", "6.5"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"6.5", ",", "7.5"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"7.5", ",", "8.5"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"8.5", ",", "9.5"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"9.5", ",", "10.5"}], "}"}]}], "}"}]}], ";"}], "*)"}]], "Input",\
+
+ CellChangeTimes->{{3.858915259332368*^9, 3.858915370671402*^9}, {
+  3.8589154282915773`*^9, 3.858915483884079*^9}, {3.8589159675760612`*^9, 
+  3.85891602087123*^9}, {3.858916053157423*^9, 3.85891606292733*^9}, {
+  3.858916325477758*^9, 3.858916325658166*^9}, {3.8589173517958193`*^9, 
+  3.858917371009892*^9}},ExpressionUUID->"fccc8f5f-cdef-4fda-992c-\
+f8429dfc9af7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  SuperscriptBox["\[ScriptCapitalM]", "*"], " ", "in", " ", "redshift", " ", 
+  "bins"}]], "Subsubsection",
+ CellChangeTimes->{{3.867620939202215*^9, 3.867620952620985*^9}, {
+  3.86762102922873*^9, 3.867621053422871*^9}, {3.8676211271141043`*^9, 
+  3.8676211380980043`*^9}},ExpressionUUID->"15e166ba-cc76-44e9-8bb2-\
+dba3b905e0ee"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin1Mean", "=", "10.66"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin1Delta", "=", "0.05"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin1", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin1Mean", ",", 
+       "\[ScriptCapitalM]starBin1Delta"}], "]"}], ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin2Mean", "=", "10.80"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin2Delta", "=", "0.06"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin2", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin2Mean", ",", 
+       "\[ScriptCapitalM]starBin2Delta"}], "]"}], ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin3Mean", "=", "10.72"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin3Delta", "=", "0.07"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin3", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin3Mean", ",", 
+       "\[ScriptCapitalM]starBin3Delta"}], "]"}], ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin4Mean", "=", "10.72"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin4Delta", "=", "0.05"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin4", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin4Mean", ",", 
+       "\[ScriptCapitalM]starBin4Delta"}], "]"}], ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin5Mean", "=", "10.77"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin5Delta", "=", "0.06"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin5", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin5Mean", ",", 
+       "\[ScriptCapitalM]starBin5Delta"}], "]"}], ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin6Mean", "=", "10.77"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin6Delta", "=", "0.10"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin6", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin6Mean", ",", 
+       "\[ScriptCapitalM]starBin6Delta"}], "]"}], ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin7Mean", "=", "10.84"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin7Delta", "=", "0.18"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin7", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin7Mean", ",", 
+       "\[ScriptCapitalM]starBin7Delta"}], "]"}], ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin8Mean", "=", "10.96"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin8Delta", "=", "0.13"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin8", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin8Mean", ",", 
+       "\[ScriptCapitalM]starBin8Delta"}], "]"}], ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin9Mean", "=", "10.78"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin9Delta", "=", "0.23"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin9", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin9Mean", ",", 
+       "\[ScriptCapitalM]starBin9Delta"}], "]"}], ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin10Mean", "=", "10.49"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin10Delta", "=", "0.32"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin10", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin10Mean", ",", 
+       "\[ScriptCapitalM]starBin10Delta"}], "]"}], ",", "NumSample"}], 
+    "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin11Mean", "=", "10.04"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin11Delta1", "=", "0.13"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin11Delta2", "=", "0.15"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin11", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", "10.007456228418638`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.114`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.1656`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin12Mean", "=", "9.98"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin12Delta1", "=", "0.24"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin12Delta2", "=", "0.44"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"a", "=", "1.503"}], ";", 
+  RowBox[{"b", "=", "30"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", "=", 
+   RowBox[{"ProbabilityDistribution", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"PDF", "[", 
+       RowBox[{
+        RowBox[{"GammaDistribution", "[", 
+         RowBox[{"a", ",", "b"}], "]"}], ",", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"x", "-", "9.607716666"}], ")"}], "*", 
+         FractionBox["42.050020", "0.44"]}]}], "]"}], "*", 
+      FractionBox["1", "0.010463728673612999`"]}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", "0", ",", "Infinity"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin12", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin13", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"9.5", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalM]starBin14", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"9.5", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}]}], "Code",
+ CellChangeTimes->{{3.867620096664731*^9, 3.8676201616376657`*^9}, {
+   3.867620249829709*^9, 3.8676202553069277`*^9}, {3.8676204811535254`*^9, 
+   3.867620868245556*^9}, {3.867766327586515*^9, 3.867766327994998*^9}, {
+   3.867766410850877*^9, 3.867766411112467*^9}, {3.867766475168536*^9, 
+   3.867766475506325*^9}, {3.867766938552759*^9, 3.867766943278015*^9}, {
+   3.867768246989184*^9, 3.8677682472817717`*^9}, {3.86776871040407*^9, 
+   3.86776871067365*^9}, {3.867773731956876*^9, 3.8677737358379383`*^9}, 
+   3.868360636723638*^9, 3.86836545200321*^9, 3.868365504254512*^9},
+ CellLabel->"In[5]:=",ExpressionUUID->"98459c13-23f5-43fc-8c16-48daa39d9fbb"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SubscriptBox["Log", "10"], "[", 
+   SuperscriptBox[
+    SubscriptBox["\[Phi]", "1"], "*"], "]"}], " ", "in", " ", "redshift", " ",
+   "bins"}]], "Subsubsection",
+ CellChangeTimes->{{3.867620973599774*^9, 3.867621040179089*^9}, {
+  3.867621147531007*^9, 3.867621147961205*^9}, {3.8676211944160137`*^9, 
+  3.8676212206238422`*^9}},ExpressionUUID->"3143d2e3-b600-4e70-99d4-\
+7ad4b82bc811"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin1Mean", "=", 
+   RowBox[{"-", "2.40"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin1Delta", "=", "0.04"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin1", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"log\[Phi]1Bin1Mean", ",", "log\[Phi]1Bin1Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin2Mean", "=", 
+   RowBox[{"-", "2.77"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin2Delta1", "=", "0.07"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin2Delta2", "=", "0.06"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin2", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "2.7537778288004584`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.0777`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.052`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin3Mean", "=", 
+   RowBox[{"-", "2.80"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin3Delta1", "=", "0.09"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin3Delta2", "=", "0.07"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin3", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "2.7652029914433633`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.10564`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.0511`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin4Mean", "=", 
+   RowBox[{"-", "2.94"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin4Delta1", "=", "0.05"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin4Delta2", "=", "0.04"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin4", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "2.9229943185106593`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.05775`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.031`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin5Mean", "=", 
+   RowBox[{"-", "3.18"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin5Delta1", "=", "0.08"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin5Delta2", "=", "0.07"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin5", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "3.1638035213655646`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.0878`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.0621`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin6Mean", "=", 
+   RowBox[{"-", "3.39"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin6Delta1", "=", "0.11"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin6Delta2", "=", "0.09"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin6", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "3.356486788292531`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.12545`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.0726`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin7Mean", "=", 
+   RowBox[{"-", "4.30"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin7Delta1", "=", "0.52"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin7Delta2", "=", "0.23"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", "=", 
+   RowBox[{"ProbabilityDistribution", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"PDF", "[", 
+       RowBox[{
+        RowBox[{"GammaDistribution", "[", 
+         RowBox[{"1.01", ",", "30"}], "]"}], ",", 
+        RowBox[{
+         RowBox[{"-", 
+          RowBox[{"(", 
+           RowBox[{"x", "+", 
+            RowBox[{"(", 
+             RowBox[{"4.3", "-", "0.3190713128296495`"}], ")"}]}], ")"}]}], 
+         "*", "10", "*", 
+         FractionBox["3.4362745392776026`", "0.52"]}]}], "]"}], "*", 
+      FractionBox["1", "0.015132667487892808`"]}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", 
+       RowBox[{"-", "Infinity"}], ",", 
+       RowBox[{"-", "3.9809286871703504`"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin7", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin8Mean", "=", 
+   RowBox[{"-", "3.94"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin8Delta", "=", "0.16"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin8", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"log\[Phi]1Bin8Mean", ",", "log\[Phi]1Bin8Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin9Mean", "=", 
+   RowBox[{"-", "4.18"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin9Delta", "=", "0.29"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin9", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"log\[Phi]1Bin9Mean", ",", "log\[Phi]1Bin9Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin10Mean", "=", 
+   RowBox[{"-", "4.16"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin10Delta", "=", "0.47"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin10", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"log\[Phi]1Bin10Mean", ",", "log\[Phi]1Bin10Delta"}], "]"}], 
+     ",", "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin11Mean", "=", 
+   RowBox[{"-", "4.14"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin11Delta1", "=", "0.23"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin11Delta2", "=", "0.19"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin11", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "4.073358037795658`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.2609`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.1557`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin12Mean", "=", 
+   RowBox[{"-", "4.69"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin12Delta1", "=", "0.72"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin12Delta2", "=", "0.40"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"a", "=", "1.58"}], ";", " ", 
+  RowBox[{"b", "=", "30"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", "=", 
+   RowBox[{"ProbabilityDistribution", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"PDF", "[", 
+       RowBox[{
+        RowBox[{"GammaDistribution", "[", 
+         RowBox[{"a", ",", "b"}], "]"}], ",", 
+        RowBox[{
+         RowBox[{"-", 
+          RowBox[{"(", 
+           RowBox[{"x", "-", "0.63254683", "+", "4.69"}], ")"}]}], "*", 
+         FractionBox["43.09506593266788`", "0.72"]}]}], "]"}], "*", 
+      FractionBox["1", "0.01670724906477541`"]}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", 
+       RowBox[{"-", "Infinity"}], ",", 
+       RowBox[{"-", "4.0574531700000005`"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin12", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", ",", "NumSample"}], "]"}]}],
+   ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin13Mean", "=", 
+   RowBox[{"-", "5.12"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin13Delta1", "=", "0.13"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin13Delta2", "=", "0.10"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin13", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "5.0689350082804685`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.153`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.073`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin14Mean", "=", 
+   RowBox[{"-", "6.13"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin14Delta1", "=", "0.36"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin14Delta2", "=", "0.19"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"a", "=", "1.38"}], ";", 
+  RowBox[{"b", "=", "30"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", "=", 
+   RowBox[{"ProbabilityDistribution", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"PDF", "[", 
+       RowBox[{
+        RowBox[{"GammaDistribution", "[", 
+         RowBox[{"a", ",", "b"}], "]"}], ",", 
+        RowBox[{
+         RowBox[{"-", 
+          RowBox[{"(", 
+           RowBox[{"x", "-", "0.2852652", "+", "6.13"}], ")"}]}], "*", 
+         FractionBox["40.30810021229397`", "0.36"]}]}], "]"}], "*", 
+      FractionBox["1", "0.008931207328153857`"]}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", 
+       RowBox[{"-", "Infinity"}], ",", 
+       RowBox[{"-", "5.8447348"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]1Bin14", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", ",", "NumSample"}], "]"}]}],
+   ";"}]}], "Code",
+ CellChangeTimes->{{3.8676212477077913`*^9, 3.867621313062065*^9}, {
+   3.8676213824736958`*^9, 3.8676213911791*^9}, {3.8676214443675947`*^9, 
+   3.8676214685051413`*^9}, {3.86762162072712*^9, 3.867621653499848*^9}, {
+   3.867621770727892*^9, 3.8676218156025677`*^9}, {3.8676218817436237`*^9, 
+   3.867621884482624*^9}, {3.867622041657022*^9, 3.8676220446780252`*^9}, {
+   3.8676222328923283`*^9, 3.867622235307773*^9}, {3.8676225768691797`*^9, 
+   3.867622622953081*^9}, {3.867622669529464*^9, 3.86762270423454*^9}, 
+   3.8676228225591087`*^9, {3.86762290997059*^9, 3.867622915346675*^9}, {
+   3.8676638375269833`*^9, 3.867663884580391*^9}, {3.8676646977633057`*^9, 
+   3.8676646980619383`*^9}, {3.867664925996223*^9, 3.867664930904174*^9}, {
+   3.867665251322002*^9, 3.86766525773251*^9}, {3.867678756905663*^9, 
+   3.867678758264752*^9}, {3.867679851349615*^9, 3.867679853130962*^9}, {
+   3.8676802126572857`*^9, 3.867680215992957*^9}, {3.867680659633046*^9, 
+   3.8676806609821568`*^9}, {3.867681027228071*^9, 3.867681027556245*^9}, {
+   3.867681394839747*^9, 3.8676814008671303`*^9}, {3.867681632434437*^9, 
+   3.867681636975432*^9}, {3.867703790818254*^9, 3.8677037984791327`*^9}, {
+   3.867703829153851*^9, 3.86770384065207*^9}, {3.867703899137208*^9, 
+   3.8677039066285143`*^9}, {3.867768941798173*^9, 3.8677689422111387`*^9}, {
+   3.867769280924342*^9, 3.867769281257162*^9}, {3.867769875523905*^9, 
+   3.867769880063308*^9}, {3.867771027484798*^9, 3.867771027740163*^9}, {
+   3.867771622625421*^9, 3.86777162857977*^9}, {3.8677725008691874`*^9, 
+   3.8677725012044353`*^9}, {3.868360621410186*^9, 3.868360640980268*^9}, {
+   3.8683654282233343`*^9, 3.868365433442513*^9}, {3.868365494042059*^9, 
+   3.868365531513027*^9}},
+ CellLabel->"In[47]:=",ExpressionUUID->"cee2e7e1-7462-45b0-945a-83c03648acaf"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  SubscriptBox["\[Alpha]", "1"], " ", "in", " ", "redshift", " ", 
+  "bins"}]], "Subsubsection",
+ CellChangeTimes->{{3.867703192877182*^9, 3.867703194160253*^9}, {
+   3.867703274683691*^9, 3.8677033054379587`*^9}, {3.867703397533836*^9, 
+   3.867703398448791*^9}, {3.867703440638502*^9, 3.867703441466503*^9}, 
+   3.8677035839442587`*^9, {3.867703661550057*^9, 
+   3.8677036751503077`*^9}},ExpressionUUID->"5fa9c58a-30b7-4f2b-8244-\
+443d9dcdb2d8"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin1Mean", "=", 
+   RowBox[{"-", "0.35"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin1Delta", "=", "0.18"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin1", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin1Mean", ",", "\[Alpha]1Bin1Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin2Mean", "=", 
+   RowBox[{"-", "0.61"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin2Delta", "=", "0.23"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin2", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin2Mean", ",", "\[Alpha]1Bin2Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin3Mean", "=", 
+   RowBox[{"-", "0.46"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin3Delta", "=", "0.34"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin3", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin3Mean", ",", "\[Alpha]1Bin3Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin4Mean", "=", 
+   RowBox[{"-", "0.55"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin4Delta", "=", "0.22"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin4", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin4Mean", ",", "\[Alpha]1Bin4Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin5Mean", "=", 
+   RowBox[{"-", "0.68"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin5Delta", "=", "0.29"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin5", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin5Mean", ",", "\[Alpha]1Bin5Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin6Mean", "=", 
+   RowBox[{"-", "0.62"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin6Delta", "=", "0.5"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin6", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin6Mean", ",", "\[Alpha]1Bin6Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin7Mean", "=", 
+   RowBox[{"-", "0.00"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin7Delta", "=", "1.03"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin7", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin7Mean", ",", "\[Alpha]1Bin7Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin8Mean", "=", 
+   RowBox[{"-", "1.63"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin8Delta", "=", "0.05"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin8", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin8Mean", ",", "\[Alpha]1Bin8Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin9Mean", "=", 
+   RowBox[{"-", "1.63"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin9Delta", "=", "0.09"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin9", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin9Mean", ",", "\[Alpha]1Bin9Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin10Mean", "=", 
+   RowBox[{"-", "1.55"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin10Delta", "=", "0.19"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin10", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin10Mean", ",", "\[Alpha]1Bin10Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin11Mean", "=", 
+   RowBox[{"-", "1.73"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin11Delta", "=", "0.08"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin11", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]1Bin11Mean", ",", "\[Alpha]1Bin11Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin12Mean", "=", 
+   RowBox[{"-", "1.82"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin12Delta1", "=", "0.21"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin12Delta2", "=", "0.20"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin12", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "1.804219620683082`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.21866`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.1935`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin13", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"-", "2"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]1Bin14", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"-", "2"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}]}], "Code",
+ CellChangeTimes->{{3.867703737132762*^9, 3.867703767232236*^9}, {
+   3.867706092984169*^9, 3.867706104102528*^9}, 3.867706189033811*^9, {
+   3.867706484266192*^9, 3.867706513787909*^9}, {3.867772802763708*^9, 
+   3.867772803080929*^9}, {3.86777287740654*^9, 3.867772877673821*^9}, {
+   3.86777297544965*^9, 3.8677729757506437`*^9}, {3.867773044221319*^9, 
+   3.8677730446351624`*^9}, {3.867773566293068*^9, 3.867773568033486*^9}, {
+   3.867773659965309*^9, 3.867773675021483*^9}, 3.868360627725477*^9, 
+   3.86836543677037*^9, 3.8683654952474546`*^9},
+ CellLabel->
+  "In[104]:=",ExpressionUUID->"f3fca1cb-0793-4dfa-9a7b-311a54318380"],
+
+Cell[BoxData[
+ RowBox[{"(*", 
+  RowBox[{"Show", "[", 
+   RowBox[{
+    RowBox[{"Histogram", "[", 
+     RowBox[{"\[Alpha]1Bin12", ",", "30", ",", "\"\<PDF\>\""}], "]"}], ",", 
+    RowBox[{"Plot", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"PDF", "[", 
+        RowBox[{"\[ScriptCapitalD]", ",", "r"}], "]"}], "/.", "param"}], ",", 
+      
+      RowBox[{"{", 
+       RowBox[{"r", ",", 
+        RowBox[{"-", "3"}], ",", 
+        RowBox[{"-", "1"}]}], "}"}]}], "]"}], ",", 
+    RowBox[{"PlotRange", "->", "All"}]}], "]"}], "*)"}]], "Input",
+ CellChangeTimes->{{3.867773525561047*^9, 
+  3.867773558054837*^9}},ExpressionUUID->"13865f57-2d2f-4b53-bd86-\
+1f769fb993d1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SubscriptBox["Log", "10"], "[", 
+   SuperscriptBox[
+    SubscriptBox["\[Phi]", "2"], "*"], "]"}], " ", "in", " ", "redshift", " ",
+   "bins"}]], "Subsubsection",
+ CellChangeTimes->{{3.867706563226511*^9, 
+  3.867706567400793*^9}},ExpressionUUID->"09d856d0-d2a3-48ec-bb28-\
+728ed30633c3"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin1Mean", "=", 
+   RowBox[{"-", "3.10"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin1Delta1", "=", "0.15"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin1Delta2", "=", "0.11"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin1", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "3.0261514258942155`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.1823`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.0676`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin2Mean", "=", 
+   RowBox[{"-", "3.26"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin2Delta1", "=", "0.17"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin2Delta2", "=", "0.12"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin2", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "3.161099587898521`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.2124`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.0601`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin3Mean", "=", 
+   RowBox[{"-", "3.26"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin3Delta1", "=", "0.23"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin3Delta2", "=", "0.15"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin3", "=", 
+   RowBox[{
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"uu", "\[Rule]", 
+       RowBox[{"-", "3.057630733046968`"}]}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.3116`"}], ",", 
+      RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.01`"}]}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin4Mean", "=", 
+   RowBox[{"-", "3.54"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin4Delta1", "=", "0.22"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin4Delta2", "=", "0.14"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"log\[Phi]2Bin4", "=", 
+    RowBox[{
+     RowBox[{"RandomVariate", "[", 
+      RowBox[{"\[ScriptCapitalD]", ",", "NumSample"}], "]"}], "/.", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"uu", "\[Rule]", 
+        RowBox[{"-", "3.3366492074093546`"}]}], ",", 
+       RowBox[{"\[Sigma]\[Sigma]1", "\[Rule]", "0.3015`"}], ",", 
+       RowBox[{"\[Sigma]\[Sigma]2", "\[Rule]", "0.00001`"}]}], "}"}]}]}], 
+   ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"**", "**"}], "**"}], "**"}], "**"}], "**"}], "**"}], 
+   "*******)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin5Mean", "=", 
+   RowBox[{"-", "3.84"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin5Delta1", "=", "0.46"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin5Delta2", "=", "0.22"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"a", "=", "1.1026"}], ";", " ", 
+  RowBox[{"b", "=", "30"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", "=", 
+   RowBox[{"ProbabilityDistribution", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"PDF", "[", 
+       RowBox[{
+        RowBox[{"GammaDistribution", "[", 
+         RowBox[{"a", ",", "b"}], "]"}], ",", 
+        RowBox[{
+         RowBox[{"-", 
+          RowBox[{"(", 
+           RowBox[{"x", "-", "0.3041485", "+", "3.84"}], ")"}]}], "*", "10", 
+         "*", 
+         FractionBox["3.5971751742390854`", "0.46"]}]}], "]"}], "*", 
+      FractionBox["1", "0.012787812039131633`"]}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", 
+       RowBox[{"-", "Infinity"}], ",", 
+       RowBox[{"-", "3.5358514999999997`"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"log\[Phi]2Bin5", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", ",", "NumSample"}], 
+     "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"**", "**", "**", "**", "**", "**", "**"}], 
+   "*******)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin6Mean", "=", 
+   RowBox[{"-", "3.78"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin6Delta1", "=", "0.50"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin6Delta2", "=", "0.23"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"a", "=", "1.02"}], ";", 
+  RowBox[{"b", "=", "30"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", "=", 
+   RowBox[{"ProbabilityDistribution", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"PDF", "[", 
+       RowBox[{
+        RowBox[{"GammaDistribution", "[", 
+         RowBox[{"a", ",", "b"}], "]"}], ",", 
+        RowBox[{
+         RowBox[{"-", 
+          RowBox[{"(", 
+           RowBox[{"x", "-", "0.3094223395", "+", "3.78"}], ")"}]}], "*", 
+         "10", "*", 
+         FractionBox["3.4541240809326146`", "0.5"]}]}], "]"}], "*", 
+      FractionBox["1", "0.01447544987628238`"]}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", 
+       RowBox[{"-", "Infinity"}], ",", 
+       RowBox[{"-", "3.4705776605`"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"log\[Phi]2Bin6", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", ",", "NumSample"}], 
+     "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"**", "**", "**", "**", "**", "**", "**"}], 
+   "*******)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin7Mean", "=", 
+   RowBox[{"-", "3.94"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin7Delta1", "=", "0.37"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin7Delta2", "=", "0.20"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"a", "=", "1.467"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"b", "=", "30"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", "=", 
+   RowBox[{"ProbabilityDistribution", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"PDF", "[", 
+       RowBox[{
+        RowBox[{"GammaDistribution", "[", 
+         RowBox[{"a", ",", "b"}], "]"}], ",", 
+        RowBox[{
+         RowBox[{"-", 
+          RowBox[{"(", 
+           RowBox[{"x", "-", "0.3073335", "+", "3.94"}], ")"}]}], "*", "10", 
+         "*", 
+         FractionBox["4.154986336624221`", "0.37"]}]}], "]"}], "*", 
+      FractionBox["1", "0.008904963097919884`"]}], ",", 
+     RowBox[{"{", 
+      RowBox[{"x", ",", 
+       RowBox[{"-", "Infinity"}], ",", 
+       RowBox[{"-", "3.6326665`"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"log\[Phi]2Bin7", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{"\[ScriptCapitalD]\[ScriptCapitalD]", ",", "NumSample"}], 
+     "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"**", "**", "**", "**", "**", "**", "**"}], "*******)"}]}], "\n", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin8", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin9", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin10", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin11", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin12", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin13", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"log\[Phi]2Bin14", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"**", "**"}], "**"}], "**"}], "**"}], "**"}], "**"}], 
+   "*******)"}]}]}], "Code",
+ CellChangeTimes->{{3.867706602994114*^9, 3.86770666431085*^9}, {
+  3.867707150673678*^9, 3.8677071509500113`*^9}, {3.867707545020297*^9, 
+  3.867707545295258*^9}, {3.867708248052092*^9, 3.867708248386302*^9}, {
+  3.867708521860114*^9, 3.867708526405212*^9}, {3.867712233892893*^9, 
+  3.867712234142702*^9}, {3.867747895301937*^9, 3.867747985604603*^9}, {
+  3.8677491528555803`*^9, 3.8677491742698097`*^9}, {3.8680857648922977`*^9, 
+  3.868085795439279*^9}, {3.8681419681907988`*^9, 3.868142016610589*^9}, {
+  3.868142114721897*^9, 3.86814212163966*^9}, {3.868360628713533*^9, 
+  3.868360631332439*^9}, {3.8683654448602533`*^9, 3.8683654468319387`*^9}, {
+  3.868365496099683*^9, 3.86836549843146*^9}},
+ CellLabel->
+  "In[143]:=",ExpressionUUID->"2b408007-7e45-4cbb-9c3a-719248002521"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  SubscriptBox["\[Alpha]", "2"], " ", "in", " ", "redshift", " ", 
+  "bins"}]], "Subsubsection",
+ CellChangeTimes->{
+  3.867749270241461*^9, {3.867749319815839*^9, 
+   3.8677493205875607`*^9}},ExpressionUUID->"6ab99e8a-9721-4026-a841-\
+81c97b9ee95e"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin1Mean", "=", 
+   RowBox[{"-", "1.47"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin1Delta", "=", "0.05"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin1", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]2Bin1Mean", ",", "\[Alpha]2Bin1Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin2Mean", "=", 
+   RowBox[{"-", "1.52"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin2Delta", "=", "0.05"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin2", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]2Bin2Mean", ",", "\[Alpha]2Bin2Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin3Mean", "=", 
+   RowBox[{"-", "1.53"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin3Delta", "=", "0.07"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin3", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]2Bin3Mean", ",", "\[Alpha]2Bin3Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin4Mean", "=", 
+   RowBox[{"-", "1.65"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin4Delta", "=", "0.07"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin4", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]2Bin4Mean", ",", "\[Alpha]2Bin4Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin5Mean", "=", 
+   RowBox[{"-", "1.73"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin5Delta", "=", "0.12"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin5", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]2Bin5Mean", ",", "\[Alpha]2Bin5Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin6Mean", "=", 
+   RowBox[{"-", "1.74"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin6Delta", "=", "0.13"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin6", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Alpha]2Bin6Mean", ",", "\[Alpha]2Bin6Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin7Mean", "=", 
+   RowBox[{"-", "1.79"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin7Delta", "=", "0.09"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[Alpha]2Bin7", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{
+      RowBox[{"NormalDistribution", "[", 
+       RowBox[{"\[Alpha]2Bin7Mean", ",", "\[Alpha]2Bin7Delta"}], "]"}], ",", 
+      "NumSample"}], "]"}]}], ";"}], "\n", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"**", "**"}], "**"}], "**"}], "**"}], "**"}], "**"}], 
+   "********)"}]}], "\n", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin8", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin9", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin10", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin11", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin12", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin13", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"\[Alpha]2Bin14", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{"0", ",", 
+     RowBox[{"{", 
+      RowBox[{"num", ",", "1", ",", "NumSample"}], "}"}]}], "]"}]}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"**", "**"}], "**"}], "**"}], "**"}], "**"}], "**"}], 
+   "*******)"}]}]}], "Code",
+ CellChangeTimes->{{3.86774929566331*^9, 3.86774935985252*^9}, {
+  3.8677493974659357`*^9, 3.867749400342071*^9}, {3.867749986960569*^9, 
+  3.8677500144469423`*^9}, {3.868142161984172*^9, 3.8681422472944393`*^9}},
+ CellLabel->
+  "In[185]:=",ExpressionUUID->"fa49f88c-c636-48fa-b47d-742772d9f5e9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"stellar", " ", "mass", " ", 
+   RowBox[{"function", ":", "\[Phi]"}]}], "=", 
+  RowBox[{"\[Phi]star", "*", 
+   RowBox[{"Log", "[", "10", "]"}], "*", 
+   SuperscriptBox[
+    RowBox[{"(", 
+     SuperscriptBox["10", 
+      RowBox[{"\[ScriptCapitalM]", "-", "\[ScriptCapitalM]star"}]], ")"}], 
+    RowBox[{"1", "+", "\[Alpha]"}]], "*", 
+   RowBox[{"Exp", "[", 
+    RowBox[{"-", " ", 
+     SuperscriptBox["10", 
+      RowBox[{"\[ScriptCapitalM]", "-", "\[ScriptCapitalM]star"}]]}], 
+    "]"}]}]}]], "Subsubsection",
+ CellChangeTimes->{
+  3.868205512024618*^9},ExpressionUUID->"045aa6a7-cc44-43b9-a73a-\
+107dde49d713"],
+
+Cell["\<\
+z in redshift bin {{0, 0.06}, {0.25, 0.75}, {0.75, 1.25}, {1.25, 1.75}, \
+{1.75, 2.25}, {2.25, 2.75}, {2.75, 3.75}, 
+                                    {3.75, 4.5}, {4.5, 5.5}, {5.5, 6.5}, \
+{6.5, 7.5}, {7.5, 8.5}, {8.5, 9.5}, {9.5, 10.5}} \
+\>", "Text",
+ CellChangeTimes->{{3.868205521088553*^9, 
+  3.868205522966661*^9}},ExpressionUUID->"43ea2708-6958-4424-9dbd-\
+3e75fddbcdf8"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "collect", " ", "the", " ", "paramters", " ", "in", " ", "different", " ", 
+    "redshift", " ", "bins"}], " ", "*)"}], "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"\[ScriptCapitalM]star", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "\[ScriptCapitalM]starBin1", ",", "\[ScriptCapitalM]starBin2", ",", 
+       "\[ScriptCapitalM]starBin3", ",", "\[ScriptCapitalM]starBin4", ",", 
+       "\[ScriptCapitalM]starBin5", ",", "\[ScriptCapitalM]starBin6", ",", 
+       "\[ScriptCapitalM]starBin7", ",", "\[ScriptCapitalM]starBin8", ",", 
+       "\[ScriptCapitalM]starBin9", ",", "\[ScriptCapitalM]starBin10", ",", 
+       "\[ScriptCapitalM]starBin11", ",", "\[ScriptCapitalM]starBin12", ",", 
+       "\[ScriptCapitalM]starBin13", ",", "\[ScriptCapitalM]starBin14"}], 
+      "}"}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Exp\[Phi]1star", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "log\[Phi]1Bin1", ",", "log\[Phi]1Bin2", ",", "log\[Phi]1Bin3", ",", 
+       "log\[Phi]1Bin4", ",", "log\[Phi]1Bin5", ",", "log\[Phi]1Bin6", ",", 
+       "log\[Phi]1Bin7", ",", "log\[Phi]1Bin8", ",", "log\[Phi]1Bin9", ",", 
+       "log\[Phi]1Bin10", ",", "log\[Phi]1Bin11", ",", "log\[Phi]1Bin12", ",",
+        "log\[Phi]1Bin13", ",", "log\[Phi]1Bin14"}], "}"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"\[Phi]1star", "=", 
+     SuperscriptBox["10", "Exp\[Phi]1star"]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Exp\[Phi]2star", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "log\[Phi]2Bin1", ",", "log\[Phi]2Bin2", ",", "log\[Phi]2Bin3", ",", 
+       "log\[Phi]2Bin4", ",", "log\[Phi]2Bin5", ",", "log\[Phi]2Bin6", ",", 
+       "log\[Phi]2Bin7", ",", "log\[Phi]2Bin8", ",", "log\[Phi]2Bin9", ",", 
+       "log\[Phi]2Bin10", ",", "log\[Phi]2Bin11", ",", "log\[Phi]2Bin12", ",",
+        "log\[Phi]2Bin13", ",", "log\[Phi]2Bin14"}], "}"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"\[Phi]2star", "=", 
+     RowBox[{
+      SuperscriptBox["10", "Exp\[Phi]2star"], "*", 
+      RowBox[{"{", 
+       RowBox[{
+       "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", "1", ",", 
+        "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0"}], 
+       "}"}]}]}], ";"}], "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"\[Alpha]1", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "\[Alpha]1Bin1", ",", "\[Alpha]1Bin2", ",", "\[Alpha]1Bin3", ",", 
+       "\[Alpha]1Bin4", ",", "\[Alpha]1Bin5", ",", "\[Alpha]1Bin6", ",", 
+       "\[Alpha]1Bin7", ",", "\[Alpha]1Bin8", ",", "\[Alpha]1Bin9", ",", 
+       "\[Alpha]1Bin10", ",", "\[Alpha]1Bin11", ",", "\[Alpha]1Bin12", ",", 
+       "\[Alpha]1Bin13", ",", "\[Alpha]1Bin14"}], "}"}]}], ";"}], 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"\[Alpha]2", "=", 
+     RowBox[{"{", 
+      RowBox[{
+      "\[Alpha]2Bin1", ",", "\[Alpha]2Bin2", ",", "\[Alpha]2Bin3", ",", 
+       "\[Alpha]2Bin4", ",", "\[Alpha]2Bin5", ",", "\[Alpha]2Bin6", ",", 
+       "\[Alpha]2Bin7", ",", "\[Alpha]2Bin8", ",", "\[Alpha]2Bin9", ",", 
+       "\[Alpha]2Bin10", ",", "\[Alpha]2Bin11", ",", "\[Alpha]2Bin12", ",", 
+       "\[Alpha]2Bin13", ",", "\[Alpha]2Bin14"}], "}"}]}], ";"}]}]}]], "Code",\
+
+ CellChangeTimes->{{3.8682063136800613`*^9, 3.8682063620563517`*^9}, {
+   3.8682066984423113`*^9, 3.868206707677902*^9}, {3.8682075665105867`*^9, 
+   3.868207567439267*^9}, 3.868218911285123*^9, {3.86821894448243*^9, 
+   3.868218983889867*^9}, {3.8682190980372972`*^9, 3.8682190985983877`*^9}, {
+   3.868219184181384*^9, 3.868219254981436*^9}, {3.868219287732594*^9, 
+   3.868219312072761*^9}, {3.86821934794207*^9, 3.868219409231229*^9}, {
+   3.868219816055231*^9, 3.86821989180589*^9}, {3.868220053767292*^9, 
+   3.8682200551478157`*^9}, {3.868220094043124*^9, 3.868220138016349*^9}, 
+   3.868220467310549*^9, {3.868220760488886*^9, 3.868220803464322*^9}, {
+   3.86822091200243*^9, 3.868220912304735*^9}, {3.868221614022973*^9, 
+   3.868221623757093*^9}, 3.868221765442399*^9, {3.868222461277512*^9, 
+   3.868222462141173*^9}, {3.868291648744563*^9, 3.868291653450819*^9}, {
+   3.890629483062461*^9, 
+   3.8906295127950373`*^9}},ExpressionUUID->"1444b23f-8452-40bf-b5a8-\
+ef72c903f016"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/stellar_mass_function/Mstar.txt\>\"", 
+    ",", 
+    RowBox[{"Compress", "@", "\[ScriptCapitalM]star"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/stellar_mass_function/Phi1star.txt\>\"",
+     ",", 
+    RowBox[{"Compress", "@", "\[Phi]1star"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/stellar_mass_function/Phi2star.txt\>\"",
+     ",", 
+    RowBox[{"Compress", "@", "\[Phi]2star"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/stellar_mass_function/alpha1.txt\>\"", 
+    ",", 
+    RowBox[{"Compress", "@", "\[Alpha]1"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/stellar_mass_function/alpha2.txt\>\"", 
+    ",", 
+    RowBox[{"Compress", "@", "\[Alpha]2"}]}], "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.868398197740161*^9, 3.868398276431121*^9}, {
+  3.868398312631515*^9, 3.868398313567127*^9}, {3.868398351931669*^9, 
+  3.8683983545899343`*^9}, {3.86839852248979*^9, 3.8683985512663593`*^9}, {
+  3.8683990089316483`*^9, 3.868399040567642*^9}},
+ CellLabel->
+  "In[477]:=",ExpressionUUID->"d862e253-00cf-465c-9a38-64241c5176dc"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+sampling  parameters in galaxy merger (per galaxy) distribution\
+\>", "Section",
+ CellChangeTimes->{{3.8680807442922697`*^9, 
+  3.868080747048802*^9}},ExpressionUUID->"03a9db59-1164-4330-abda-\
+92a78d24da9f"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   FractionBox["dN", 
+    RowBox[{"d\[Mu]", " ", "dt"}]], 
+   RowBox[{"(", 
+    RowBox[{"\[ScriptCapitalM]", ",", "\[Mu]", ",", "z"}], ")"}]}], "=", 
+  RowBox[{
+   RowBox[{"\[ScriptCapitalR]", "[", 
+    RowBox[{"Ms", ",", "\[Mu]", ",", "z"}], 
+    StyleBox["]", "Text"]}], 
+   StyleBox[" ", "Text"], "=", 
+   RowBox[{"A", 
+    RowBox[{"(", "z", ")"}], " ", 
+    SuperscriptBox["10", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{"Log10Ms", "-", "10"}], ")"}], "\[Alpha]", 
+      RowBox[{"(", "z", ")"}]}]], "*", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", 
+      SuperscriptBox[
+       RowBox[{"(", 
+        SuperscriptBox["10", 
+         RowBox[{"Log10Ms", "-", 
+          RowBox[{"Log10", "[", 
+           SubscriptBox["M", "0"], "]"}]}]], ")"}], 
+       RowBox[{"\[Delta]", 
+        RowBox[{"(", "z", ")"}]}]]}], ")"}], 
+    SuperscriptBox["\[Mu]", 
+     RowBox[{
+      RowBox[{"\[Beta]", 
+       RowBox[{"(", "z", ")"}]}], "+", 
+      RowBox[{"\[Gamma]", "*", 
+       RowBox[{"(", 
+        RowBox[{"Log10Ms", "-", "10"}], 
+        ")"}]}]}]]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"where", ",", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"A", 
+     RowBox[{"(", "z", ")"}]}], "=", 
+    RowBox[{"A0", "*", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", "z"}], ")"}], "\[Eta]"]}]}], ";", 
+   RowBox[{
+    RowBox[{"\[Alpha]", 
+     RowBox[{"(", "z", ")"}]}], "=", 
+    RowBox[{"\[Alpha]0", "*", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", "z"}], ")"}], "\[Alpha]1"]}]}], ";", 
+   RowBox[{
+    RowBox[{"\[Beta]", 
+     RowBox[{"(", "z", ")"}]}], "=", 
+    RowBox[{"\[Beta]0", "*", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", "z"}], ")"}], "\[Beta]1"]}]}], ";", 
+   RowBox[{
+    RowBox[{"\[Delta]", 
+     RowBox[{"(", "z", ")"}]}], "=", 
+    RowBox[{"\[Delta]0", "*", 
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"1", "+", "z"}], ")"}], "\[Delta]1"]}]}], ";"}]}]}], "Text",
+ CellChangeTimes->{{3.868080890429803*^9, 3.868080930888092*^9}, {
+  3.868081007889277*^9, 3.868081045069859*^9}, {3.868081367456975*^9, 
+  3.868081476641815*^9}, {3.868081578924609*^9, 3.868081622839576*^9}, {
+  3.868081940235138*^9, 3.868081971336153*^9}, {3.868082293780922*^9, 
+  3.868082302827073*^9}, {3.868203574444977*^9, 
+  3.868203613930435*^9}},ExpressionUUID->"6d414701-98af-47fb-bce9-\
+f27fdc827d4f"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Clear", "[", 
+   RowBox[{
+   "M0", ",", "A0", ",", "\[Eta]", ",", "\[Alpha]0", ",", "\[Alpha]\[Alpha]1",
+     ",", "\[Beta]0", ",", "\[Beta]1", ",", "\[Gamma]", ",", "\[Delta]0", ",",
+     "\[Delta]1", ",", "A", ",", "\[Alpha]", ",", "\[Beta]", ",", "\[Delta]", 
+    ",", "\[ScriptCapitalR]"}], "]"}], "\n", 
+  RowBox[{"(*", " ", 
+   SubscriptBox["M", "0"], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"M0", "=", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"2", "*", 
+       SuperscriptBox["10", "11"]}], ",", "NumSample"}], "]"}]}], ";"}], 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   FormBox[
+    SubscriptBox["A", "0"],
+    TraditionalForm], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Log10A0Mean", "=", 
+   RowBox[{"-", "2.2287"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Log10A0Delta", "=", "0.0045"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Log10A0", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"Log10A0Mean", ",", "Log10A0Delta"}], "]"}], ",", "NumSample"}],
+     "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"A0", "=", 
+    SuperscriptBox["10", "Log10A0"]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", "\[Eta]", " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Eta]Mean", "=", "2.4644"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Eta]Delta", "=", "0.0128"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[Eta]", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{
+      RowBox[{"NormalDistribution", "[", 
+       RowBox[{"\[Eta]Mean", ",", "\[Eta]Delta"}], "]"}], ",", "NumSample"}], 
+     "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   SubscriptBox["\[Alpha]", "0"], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]0Mean", "=", "0.2241"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]0Delta", "=", "0.0038"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[Alpha]0", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{
+      RowBox[{"NormalDistribution", "[", 
+       RowBox[{"\[Alpha]0Mean", ",", "\[Alpha]0Delta"}], "]"}], ",", 
+      "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   SubscriptBox["\[Alpha]", "1"], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]\[Alpha]1Mean", "=", 
+   RowBox[{"-", "1.1759"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Alpha]\[Alpha]1Delta", "=", "0.0316"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[Alpha]\[Alpha]1", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{
+      RowBox[{"NormalDistribution", "[", 
+       RowBox[{"\[Alpha]\[Alpha]1Mean", ",", "\[Alpha]\[Alpha]1Delta"}], 
+       "]"}], ",", "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   SubscriptBox["\[Beta]", "0"], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Beta]0Mean", "=", 
+   RowBox[{"-", "1.2595"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Beta]0Delta", "=", "0.0026"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[Beta]0", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{
+      RowBox[{"NormalDistribution", "[", 
+       RowBox[{"\[Beta]0Mean", ",", "\[Beta]0Delta"}], "]"}], ",", 
+      "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   SubscriptBox["\[Beta]", "1"], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Beta]1Mean", "=", "0.0611"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Beta]1Delta", "=", "0.0021"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[Beta]1", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{
+      RowBox[{"NormalDistribution", "[", 
+       RowBox[{"\[Beta]1Mean", ",", "\[Beta]1Delta"}], "]"}], ",", 
+      "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", "\[Gamma]", " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Gamma]Mean", "=", 
+   RowBox[{"\[Minus]", "0.0477"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Gamma]Delta", "=", "0.0013"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[Gamma]", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{
+      RowBox[{"NormalDistribution", "[", 
+       RowBox[{"\[Gamma]Mean", ",", "\[Gamma]Delta"}], "]"}], ",", 
+      "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   SubscriptBox["\[Delta]", "0"], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Delta]0Mean", "=", "0.7668"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Delta]0Delta", "=", "0.0202"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"\[Delta]0", "=", 
+    RowBox[{"RandomVariate", "[", 
+     RowBox[{
+      RowBox[{"NormalDistribution", "[", 
+       RowBox[{"\[Delta]0Mean", ",", "\[Delta]0Delta"}], "]"}], ",", 
+      "NumSample"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", " ", 
+   SubscriptBox["\[Delta]", "1"], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Delta]1Mean", "=", 
+   RowBox[{"\[Minus]", "0.4695"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Delta]1Delta", "=", "0.0440"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Delta]1", "=", 
+   RowBox[{"RandomVariate", "[", 
+    RowBox[{
+     RowBox[{"NormalDistribution", "[", 
+      RowBox[{"\[Delta]1Mean", ",", "\[Delta]1Delta"}], "]"}], ",", 
+     "NumSample"}], "]"}]}], ";"}]}], "Code",
+ CellChangeTimes->{{3.868085124577096*^9, 3.868085396834496*^9}, {
+  3.86822216353267*^9, 3.86822216438596*^9}, {3.868226228199643*^9, 
+  3.868226239949521*^9}, {3.868228286975008*^9, 3.868228288512856*^9}},
+ CellLabel->
+  "In[220]:=",ExpressionUUID->"54f8d185-0c3d-4639-9927-cc6bebd66800"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/M0.txt\>\"", 
+    ",", 
+    RowBox[{"Compress", "[", "M0", "]"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/A0.txt\>\"", 
+    ",", 
+    RowBox[{"Compress", "[", "A0", "]"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/eta.txt\>\"", 
+    ",", 
+    RowBox[{"Compress", "[", "\[Eta]", "]"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/alpha0.txt\>\"\
+", ",", 
+    RowBox[{"Compress", "[", "\[Alpha]0", "]"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/alpha1.txt\>\"\
+", ",", 
+    RowBox[{"Compress", "[", "\[Alpha]\[Alpha]1", "]"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/beta0.txt\>\"",
+     ",", 
+    RowBox[{"Compress", "[", "\[Beta]0", "]"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/beta1.txt\>\"",
+     ",", 
+    RowBox[{"Compress", "[", "\[Beta]1", "]"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/gamma.txt\>\"",
+     ",", 
+    RowBox[{"Compress", "[", "\[Gamma]", "]"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/delta0.txt\>\"\
+", ",", 
+    RowBox[{"Compress", "[", "\[Delta]0", "]"}]}], "]"}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Export", "[", 
+   RowBox[{
+   "\"\<~/Downloads/sample_parameters/galaxy_merger_per_galaxy/delta1.txt\>\"\
+", ",", 
+    RowBox[{"Compress", "[", "\[Delta]1", "]"}]}], "]"}], ";"}]}], "Input",
+ CellChangeTimes->{{3.8683985984971113`*^9, 3.868398626876029*^9}, {
+  3.868398784232233*^9, 3.8683987902475557`*^9}, {3.868398975570775*^9, 
+  3.868398996764717*^9}, {3.8683995634545603`*^9, 
+  3.868399606629155*^9}},ExpressionUUID->"242d1f53-2b5e-4bb2-85ad-\
+cd3c8037cfb7"],
+
+Cell[TextData[StyleBox["Reference: \n1. Yun Fang & Huan Yang, ``Probing the \
+Delay Time of Supermassive Black Hole Binary Mergers With Gravitational Waves\
+\[CloseCurlyDoubleQuote], 2022, arXiv: 2209.14509.",
+ FontSize->16,
+ FontColor->RGBColor[0, 0, 1]]], "Text",
+ CellChangeTimes->{{3.890629718906661*^9, 3.890629826874552*^9}, {
+  3.890815155916955*^9, 
+  3.890815193166903*^9}},ExpressionUUID->"75d494df-dbb9-4e2a-bd78-\
+083339cfdcd9"]
+}, Open  ]]
+},
+WindowSize->{1488, 433},
+WindowMargins->{{Automatic, 11}, {Automatic, 0}},
+TaggingRules->{"TryRealOnly" -> False},
+Magnification:>1.5 Inherited,
+FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"19b309ec-924b-4d2f-83e8-f2925e85dfc4"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[400, 13, 690, 13, 78, "Input",ExpressionUUID->"f3c45a80-d11b-4c8c-825e-284811b392da"],
+Cell[1093, 28, 2971, 72, 212, "Code",ExpressionUUID->"0cc1e16d-157a-4c3e-b0ef-1a747e2e1eb7"],
+Cell[CellGroupData[{
+Cell[4089, 104, 170, 3, 101, "Section",ExpressionUUID->"f64b7552-bc9a-4276-b8f3-6f869658abf3"],
+Cell[CellGroupData[{
+Cell[4284, 111, 963, 22, 73, "Subsubsection",ExpressionUUID->"094b0762-fcb6-4a40-9518-c9685ecd5e1d"],
+Cell[5250, 135, 1514, 40, 78, "Input",ExpressionUUID->"fccc8f5f-cdef-4fda-992c-f8429dfc9af7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6801, 180, 355, 7, 67, "Subsubsection",ExpressionUUID->"15e166ba-cc76-44e9-8bb2-dba3b905e0ee"],
+Cell[7159, 189, 8317, 227, 1293, "Code",ExpressionUUID->"98459c13-23f5-43fc-8c16-48daa39d9fbb"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15513, 421, 424, 10, 69, "Subsubsection",ExpressionUUID->"3143d2e3-b600-4e70-99d4-7ad4b82bc811"],
+Cell[15940, 433, 12740, 322, 1787, "Code",ExpressionUUID->"cee2e7e1-7462-45b0-945a-83c03648acaf"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[28717, 760, 471, 9, 67, "Subsubsection",ExpressionUUID->"5fa9c58a-30b7-4f2b-8244-443d9dcdb2d8"],
+Cell[29191, 771, 6939, 179, 1181, "Code",ExpressionUUID->"f3fca1cb-0793-4dfa-9a7b-311a54318380"],
+Cell[36133, 952, 667, 19, 46, "Input",ExpressionUUID->"13865f57-2d2f-4b53-bd86-1f769fb993d1"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[36837, 976, 325, 9, 69, "Subsubsection",ExpressionUUID->"09d856d0-d2a3-48ec-bb28-728ed30633c3"],
+Cell[37165, 987, 9920, 275, 1497, "Code",ExpressionUUID->"2b408007-7e45-4cbb-9c3a-719248002521"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[47122, 1267, 274, 7, 67, "Subsubsection",ExpressionUUID->"6ab99e8a-9721-4026-a841-81c97b9ee95e"],
+Cell[47399, 1276, 5328, 156, 920, "Code",ExpressionUUID->"fa49f88c-c636-48fa-b47d-742772d9f5e9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[52764, 1437, 646, 18, 73, "Subsubsection",ExpressionUUID->"045aa6a7-cc44-43b9-a73a-107dde49d713"],
+Cell[53413, 1457, 391, 8, 88, "Text",ExpressionUUID->"43ea2708-6958-4424-9dbd-3e75fddbcdf8"],
+Cell[53807, 1467, 4246, 85, 282, "Code",ExpressionUUID->"1444b23f-8452-40bf-b5a8-ef72c903f016"],
+Cell[58056, 1554, 1479, 40, 171, "Input",ExpressionUUID->"d862e253-00cf-465c-9a38-64241c5176dc"]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[59584, 1600, 218, 5, 101, "Section",ExpressionUUID->"03a9db59-1164-4330-abda-92a78d24da9f"],
+Cell[59805, 1607, 2396, 73, 221, "Text",ExpressionUUID->"6d414701-98af-47fb-bce9-f27fdc827d4f"],
+Cell[62204, 1682, 5939, 156, 1213, "Code",ExpressionUUID->"54f8d185-0c3d-4639-9927-cc6bebd66800"],
+Cell[68146, 1840, 2546, 74, 326, "Input",ExpressionUUID->"242d1f53-2b5e-4bb2-85ad-cd3c8037cfb7"],
+Cell[70695, 1916, 440, 8, 125, "Text",ExpressionUUID->"75d494df-dbb9-4e2a-bd78-083339cfdcd9"]
+}, Open  ]]
+}
+]
+*)
+
