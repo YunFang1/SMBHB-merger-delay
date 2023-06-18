@@ -1,0 +1,29 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: SMBHB merger delay
+message: >-
+  If you use this dataset, please cite it using the metadata
+  from this file.
+type: dataset
+authors:
+  - given-names: Yun
+    family-names: Fang
+    email: yunfang.phy@gmail.com
+    affiliation: NACO
+    orcid: 'https://orcid.org/0000-0003-0065-8622'
+repository-code: 'https://github.com/YunFang1/SMBHB-merger-delay'
+url: 'https://github.com/YunFang1/SMBHB-merger-delay'
+abstract: >-
+  This is a combined Python and Fortran code for GW
+  Population Analysis using hierarchical Bayesian inference
+  to infer the delay time distribution of SMBH binary
+  mergers. Model uncertainties have been considered by using
+  an averaged Likelihood. 
+keywords:
+  - GW population analysis
+license: MIT-open-group
+commit: citation file
+version: '1.0'
+date-released: '2023-06-18'
