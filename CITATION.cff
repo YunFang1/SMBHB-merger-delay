@@ -10,8 +10,8 @@ authors:
     given-names: Yun
     email: yunfang.phy@gmail.com
     orcid: 'https://orcid.org/0000-0003-0065-8622'
-    url: 'https://github.com/YunFang1/SMBHB-merger-delay'
   - family-names: Yang
     given-names: Huan
+url: 'https://github.com/YunFang1/SMBHB-merger-delay'
 license: MIT-open-group
 date-released: '2023-06-18'
