@@ -4,8 +4,7 @@ title: Probing the delay time of supermassive black hole binary mergers with gra
 abstract: This is a combined Python and Fortran code for GW Population Analysis using hierarchical Bayesian inference to infer the delay time distribution of SMBH binary mergers. Model uncertainties have been considered by using an averaged Likelihood. 
 keywords:
   - gravitational waves 
-  – supermassive black hole binary 
-  – delay time 
+  – supermassive black holes 
   - method:hierarchical Bayesian inference 
 authors:
   - family-names: Fang
