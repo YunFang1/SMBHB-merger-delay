@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use this source and dataset in your research, please cite it using the metadata from this file."
-title: Probing the Delay Time of Supermassive Black Hole Binary Mergers With Gravitational Waves
+title: Probing the delay time of supermassive black hole binary mergers with gravitational waves
 abstract: This is a combined Python and Fortran code for GW Population Analysis using hierarchical Bayesian inference to infer the delay time distribution of SMBH binary mergers. Model uncertainties have been considered by using an averaged Likelihood. 
 keywords:
   - GW population analysis
@@ -10,6 +10,8 @@ authors:
     given-names: Yun
     email: yunfang.phy@gmail.com
     orcid: 'https://orcid.org/0000-0003-0065-8622'
-url: 'https://github.com/YunFang1/SMBHB-merger-delay'
+    url: 'https://github.com/YunFang1/SMBHB-merger-delay'
+  - family-names: Yang
+    given-names: Huan
 license: MIT-open-group
 date-released: '2023-06-18'
