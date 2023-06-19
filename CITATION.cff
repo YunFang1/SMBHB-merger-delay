@@ -10,15 +10,15 @@ type: source and dataset
 
 
 authors:
-  - given-names: Yun
-    family-names: Fang
+  - given-name: Yun
+    family-name: Fang
     email: yunfang.phy@gmail.com
     orcid: 'https://orcid.org/0000-0003-0065-8622'
 repository-code: 'https://github.com/YunFang1/SMBHB-merger-delay'
 url: 'https://github.com/YunFang1/SMBHB-merger-delay'
   
-  - given-names: Huan
-    family-names: Yang
+  - given-name: Huan
+    family-name: Yang
    
 description: >-
   This is a combined Python and Fortran code for GW
